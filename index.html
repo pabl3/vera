@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vera · Analista empresarial digital</title>
+<meta name="description" content="Vera lee las planillas que tu club ya usa, revisa los datos, los limpia con tu aprobación y te arma el tablero y el informe del mes: qué cambió, contra la inflación y hacia adelante.">
+<meta property="og:title" content="Vera · Analista empresarial digital">
+<meta property="og:description" content="De las planillas de cada mes al informe para la comisión, sin armar el tablero a mano.">
+<meta property="og:image" content="img/tablero.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="img/vera-logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#3158D4; --blue-ink:#2443A8; --ink:#151922; --ink2:#4A5163; --muted:#6B7285;
+  --soft:#EEF2FF; --grid:#D9E0F5; --paper:#FFFFFF; --page:#F7F8FC; --violet:#6E56CF;
+  --warn:#9A5A00; --warn-wash:#FFF4E2; --ok:#17733A;
+  --radius:14px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--page);color:var(--ink);
+  font:400 17px/1.6 "Schibsted Grotesk",system-ui,sans-serif;font-feature-settings:"tnum" 1}
+img{max-width:100%;height:auto;display:block}
+html,body{overflow-x:clip}
+a{color:var(--blue-ink)}
+:focus-visible{outline:3px solid var(--blue);outline-offset:3px;border-radius:6px}
+.wrap{max-width:1160px;margin:0 auto;padding:0 24px}
+
+/* Barra */
+.bar{display:flex;align-items:center;justify-content:space-between;padding:22px 0}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+.brand img{width:34px;height:34px}
+.brand b{font-weight:800;letter-spacing:.22em;font-size:17px}
+.brand span{color:var(--muted);font-size:14px;letter-spacing:0}
+.bar a.write{font-weight:600;text-decoration:none;padding:9px 16px;border-radius:999px;
+  border:1.5px solid var(--grid);background:var(--paper)}
+.bar a.write:hover{border-color:var(--blue)}
+
+/* Portada: la planilla de siempre y lo que sale de ella */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:56px;
+  align-items:center;padding:40px 0 88px}
+h1{font-size:clamp(38px,5.2vw,64px);line-height:1.02;letter-spacing:-.025em;
+  font-weight:800;margin:0 0 22px;max-width:12ch}
+.lead{font-size:20px;color:var(--ink2);max-width:34ch;margin:0 0 30px}
+.cta{display:inline-flex;align-items:center;gap:10px;background:var(--blue);color:#fff;
+  text-decoration:none;font-weight:700;font-size:18px;padding:16px 26px;border-radius:12px}
+.cta:hover{background:var(--blue-ink)}
+.cta-note{margin:14px 0 0;color:var(--muted);font-size:15px}
+
+.sheet{position:relative;background:var(--paper);border:1px solid var(--grid);
+  border-radius:var(--radius);box-shadow:0 30px 60px -30px rgba(21,25,34,.35);
+  overflow:hidden}
+.sheet .tab{display:flex;align-items:center;gap:8px;padding:10px 14px;font-size:13px;
+  color:var(--ink2);border-bottom:1px solid var(--grid);background:var(--page)}
+.sheet .tab i{width:12px;height:12px;border-radius:3px;background:#1E7B45;display:inline-block}
+table.xl{border-collapse:collapse;width:100%;font-size:13.5px}
+table.xl th,table.xl td{border:1px solid var(--grid);padding:6px 9px;white-space:nowrap;
+  text-align:left;font-weight:400}
+table.xl thead th{background:var(--soft);color:var(--ink2);font-size:12px;text-align:center}
+table.xl tbody th{background:var(--soft);color:var(--ink2);font-size:12px;width:34px;
+  text-align:center}
+table.xl td.num{text-align:right}
+table.xl tr.title td{font-weight:700;white-space:normal}
+table.xl td.flag{position:relative;background:var(--warn-wash)}
+table.xl td.flag::after{content:"";position:absolute;inset:-1px;border:2px solid var(--warn);
+  border-radius:3px}
+.notes{list-style:none;margin:0;padding:14px 13% 16px 16px;display:grid;gap:7px;
+  border-top:1px solid var(--grid);font-size:14px;color:var(--ink2)}
+.notes li{display:flex;gap:9px;align-items:baseline}
+.notes li::before{content:"";flex:none;width:9px;height:9px;border:2px solid var(--warn);
+  border-radius:2px;background:var(--warn-wash);transform:translateY(1px)}
+.phone{position:absolute;right:0;bottom:-48px;width:31%;max-width:210px;
+  border:7px solid var(--ink);border-radius:26px;overflow:hidden;background:var(--ink);
+  box-shadow:0 24px 50px -20px rgba(21,25,34,.55)}
+.hero-art{position:relative}
+.hero-art .sheet{margin-right:24%}
+
+/* Al cargar: Vera marca, una por una, las celdas con problemas */
+@media (prefers-reduced-motion:no-preference){
+  table.xl td.flag::after,.notes li{opacity:0;animation:mark .45s ease-out forwards}
+  table.xl td.flag:nth-of-type(n)::after{animation-delay:var(--d)}
+  .notes li{animation-delay:var(--d)}
+  .phone{opacity:0;transform:translateY(16px);animation:rise .6s 1.9s ease-out forwards}
+}
+@keyframes mark{from{opacity:0;transform:scale(1.12)}to{opacity:1;transform:none}}
+@keyframes rise{to{opacity:1;transform:none}}
+
+/* Secciones */
+section{padding:84px 0;border-top:1px solid var(--grid)}
+h2{font-size:clamp(28px,3.4vw,40px);line-height:1.1;letter-spacing:-.02em;font-weight:800;
+  margin:0 0 16px;max-width:22ch}
+.intro{color:var(--ink2);max-width:60ch;margin:0 0 40px;font-size:18px}
+.shot img{width:100%}
+.shot{border-radius:var(--radius);border:1px solid var(--grid);overflow:hidden;
+  background:var(--paper);box-shadow:0 20px 44px -28px rgba(21,25,34,.35)}
+
+.how{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,360px);gap:64px;align-items:start;
+  justify-content:space-between}
+.device{margin:0}
+.device img{border:8px solid var(--ink);border-radius:30px;box-shadow:0 24px 50px -24px rgba(21,25,34,.5)}
+.device figcaption{text-align:center}
+ol.steps{list-style:none;margin:0;padding:0;counter-reset:s;display:grid;gap:22px}
+ol.steps li{counter-increment:s;display:grid;grid-template-columns:44px 1fr;gap:4px 14px}
+ol.steps li::before{content:counter(s);grid-row:span 2;width:36px;height:36px;border-radius:10px;
+  background:var(--soft);color:var(--blue-ink);font-weight:800;display:grid;place-items:center}
+ol.steps b{font-size:18px}
+ol.steps span{color:var(--ink2)}
+
+.stack .shot{margin-top:40px}
+.stack .points{grid-template-columns:repeat(3,minmax(0,1fr));gap:28px}
+.stack .intro{margin-bottom:0}
+.points{list-style:none;padding:0;margin:0;display:grid;gap:16px}
+.points li{padding-left:18px;border-left:3px solid var(--blue)}
+.points li b{display:block}
+.points li span{color:var(--ink2)}
+.ia{color:var(--violet);font-weight:700}
+
+.month{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.75fr);gap:32px;align-items:start}
+.month figure{margin:0}
+figcaption{color:var(--muted);font-size:14px;margin-top:10px}
+
+/* Piloto */
+.pilot{background:var(--ink);color:#fff;border-top:0}
+.pilot h2{color:#fff}
+.pilot .intro{color:#C9CEDB}
+.pilot-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:40px;margin-bottom:44px}
+.pilot h3{font-size:19px;margin:0 0 12px}
+.pilot ul{margin:0;padding-left:20px;color:#DCE0EA;display:grid;gap:8px}
+.pilot .cta{background:#fff;color:var(--ink)}
+.pilot .cta:hover{background:var(--soft)}
+.pilot .mail{color:#C9CEDB;margin-top:16px;font-size:15px}
+.pilot .mail a{color:#fff}
+
+footer{padding:36px 0 48px;color:var(--muted);font-size:14px}
+footer p{margin:4px 0}
+
+@media (max-width:900px){
+  .hero,.how,.month,.pilot-grid,.stack .points{grid-template-columns:1fr;gap:36px}
+  .device{max-width:320px;margin:0 auto}
+  .hero{padding-bottom:96px}
+  .phone{width:34%}
+  section{padding:64px 0}
+}
+@media (max-width:560px){
+  body{font-size:16px}
+  .wrap{padding:0 16px}
+  .brand span{display:none}
+  .lead{font-size:18px}
+  .cta{width:100%;justify-content:center}
+  table.xl{font-size:12px}
+  table.xl th,table.xl td{padding:5px 6px}
+  .hero-art .sheet{margin-right:0}
+  .notes{padding-right:16px}
+  .phone{display:none}
+  .hero{padding-top:16px}
+}
+</style>
+</head>
+<body>
+<header class="wrap bar">
+  <a class="brand" href="#" aria-label="Vera, inicio"><img src="img/vera-logo.svg" alt=""><b>VERA</b><span>Analista empresarial digital</span></a>
+  <a class="write" href="mailto:passelbornda@gmail.com?subject=Quiero%20probar%20Vera">Escribime</a>
+</header>
+
+<main>
+<div class="wrap hero">
+  <div>
+    <h1>De las planillas de cada mes al informe para la comisión.</h1>
+    <p class="lead">Subís los Excel que ya usa tu club, tal como están. Vera los revisa, los ordena con tu aprobación y te dice qué cambió, cuánto contra la inflación y qué se viene.</p>
+    <a class="cta" href="#piloto">Quiero probarla en mi club</a>
+    <p class="cta-note">Piloto sin costo para clubes. Te respondo yo, Pablo.</p>
+  </div>
+
+  <div class="hero-art">
+    <div class="sheet" role="img" aria-label="Una planilla de padrón con problemas típicos marcados y, al lado, el tablero de Vera en un celular">
+      <div class="tab"><i></i>Padron de socios - Septiembre 2026.xlsx</div>
+      <table class="xl" aria-hidden="true">
+        <thead><tr><th></th><th>A</th><th>B</th><th>D</th></tr></thead>
+        <tbody>
+          <tr class="title"><th>1</th><td colspan="3">CLUB LOS AROMOS - PADRÓN DE SOCIOS SEPTIEMBRE 2026</td></tr>
+          <tr><th>2</th><td></td><td></td><td></td></tr>
+          <tr><th>3</th><td>Código</td><td>Apellido y Nombre</td><td>Cuota</td></tr>
+          <tr><th>4</th><td>1001-02</td><td>PEREYRA, Juan</td><td class="num">96.800,00</td></tr>
+          <tr><th>5</th><td class="flag" style="--d:.5s">A1002-01</td><td>GÓMEZ, Lucía</td><td class="num">48.500,00</td></tr>
+          <tr><th>6</th><td>1003-00</td><td class="flag" style="--d:.9s">LEDESMA, Martín&nbsp;&nbsp;</td><td class="num">96.800,00</td></tr>
+          <tr><th>7</th><td>1004-03</td><td>SOSA, Camila</td><td class="num flag" style="--d:1.3s">'0</td></tr>
+          <tr><th>8</th><td></td><td class="flag" style="--d:1.6s">TOTAL</td><td class="num">242.100,00</td></tr>
+        </tbody>
+      </table>
+      <ul class="notes">
+        <li style="--d:.5s">El mismo código escrito de dos formas: Vera lo une, sin juntar dos socios distintos.</li>
+        <li style="--d:.9s">Espacios de más y números guardados como texto: se limpian, y vos aprobás cada cambio.</li>
+        <li style="--d:1.6s">La fila de TOTAL no se suma dos veces.</li>
+      </ul>
+    </div>
+    <img class="phone" src="img/celular.png" alt="El tablero de Vera en un celular: qué cambió desde el mes pasado" width="390" height="844">
+  </div>
+</div>
+
+<section id="como">
+  <div class="wrap how">
+    <div>
+      <h2>Lo que hoy te lleva días, en unos minutos.</h2>
+      <p class="intro">Sin plantillas ni carga manual: Vera trabaja con lo que exporta tu sistema y con las planillas que se arman a mano.</p>
+      <ol class="steps">
+        <li><b>Subís los archivos del mes</b><span>Excel o CSV: padrón, reservas, cobros, asistencia, deudores.</span></li>
+        <li><b>Vera revisa la calidad</b><span>Encabezados corridos, totales escondidos, fórmulas rotas, fechas raras.</span></li>
+        <li><b>Aprobás la limpieza</b><span>Cada cambio se explica; nada se toca sin que lo veas. El mes siguiente se repite sola.</span></li>
+        <li><b>Entiende tu club</b><span>Qué es cada columna y cómo se cruzan las planillas: socios, actividades, cobranza.</span></li>
+        <li><b>Te arma el tablero y el informe</b><span>Qué mejoró, qué empeoró, contra el mes pasado y contra el IPC, en una página para la comisión.</span></li>
+      </ol>
+    </div>
+    <figure class="device"><img src="img/celular.png" alt="Tablero de Vera en el celular: qué cambió desde el mes pasado, lo que mejoró y lo que empeoró" width="390" height="844"><figcaption>El tablero también se lee en el celular.</figcaption></figure>
+  </div>
+</section>
+
+<section>
+  <div class="wrap stack">
+    <div class="text">
+      <h2>Cada número dice qué mide y de dónde sale.</h2>
+      <ul class="points">
+        <li><b>El código calcula</b><span>Los indicadores salen de tus archivos con cálculos fijos: el mismo archivo da siempre el mismo número.</span></li>
+        <li><b><span class="ia">Vera IA</span> interpreta</b><span>Escribe el resumen y responde preguntas, pero cada cifra que menciona se controla contra lo calculado. Sin clave de IA, funciona igual.</span></li>
+        <li><b>Nadie ve datos personales</b><span>Nombres, documentos, códigos de socio y emails nunca aparecen en el tablero, el informe ni la IA.</span></li>
+      </ul>
+    </div>
+    <figure class="shot"><picture><source media="(max-width:560px)" srcset="img/que-mide-celular.png"><img src="img/que-mide.png" alt="Tarjetas de indicadores con la explicación de qué mide cada uno y contra qué se compara" width="1160" height="352"></picture></figure>
+  </div>
+</section>
+
+<section>
+  <div class="wrap stack">
+    <div class="text">
+      <h2>Y hacia adelante, siempre con un rango.</h2>
+      <p class="intro">Con seis meses o más de historia de tu propio club, Vera estima cómo cierran los próximos meses y el ejercicio. Nunca un número solo: cada estimación trae su rango y cuánto se equivocó el mismo cálculo antes.</p>
+    </div>
+    <figure class="shot"><picture><source media="(max-width:560px)" srcset="img/proyeccion-celular.png"><img src="img/proyeccion.png" alt="Proyecciones de total cobrado, deuda y ventas para octubre, con su rango" width="1176" height="512"></picture></figure>
+  </div>
+</section>
+
+<section>
+  <div class="wrap month">
+    <div>
+      <h2>Pensado para repetirlo todos los meses.</h2>
+      <p class="intro">Vera recuerda qué archivos subiste el mes pasado y te avisa si falta alguno. Preguntale lo que le preguntarías a quien arma el informe.</p>
+      <figure><img class="shot" src="img/tu-mes.png" alt="Tu mes: los archivos del mes pasado, con Paddle marcado como faltante" width="490" height="272"><figcaption>Falta el archivo de Paddle: Vera lo marca antes de analizar.</figcaption></figure>
+    </div>
+    <figure><img class="shot" src="img/chat.png" alt="Chat con Vera IA respondiendo qué cambió contra el mes pasado" width="362" height="861"><figcaption>«¿Qué cambió contra el mes pasado?»</figcaption></figure>
+  </div>
+</section>
+
+<section class="pilot" id="piloto">
+  <div class="wrap">
+    <h2>Probala con las planillas de tu club.</h2>
+    <p class="intro">Busco 2 o 3 clubes para un piloto sin costo. Lo hacemos juntos, en mi computadora, y los archivos se borran al terminar.</p>
+    <div class="pilot-grid">
+      <div>
+        <h3>Lo que te pido</h3>
+        <ul>
+          <li>Los archivos de dos meses seguidos, tal como los exportás hoy.</li>
+          <li>El informe o los números que presentás a la comisión, para compararlos.</li>
+          <li>Una hora para verlo juntos y contarme qué te sirve y qué no.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Lo que te llevás</h3>
+        <ul>
+          <li>El tablero y el informe del mes de tu club.</li>
+          <li>La revisión de tus planillas: errores de fórmulas, totales y datos sueltos.</li>
+          <li>Un acuerdo de confidencialidad firmado antes de empezar.</li>
+        </ul>
+      </div>
+    </div>
+    <a class="cta" href="mailto:passelbornda@gmail.com?subject=Quiero%20probar%20Vera&amp;body=Hola%20Pablo%2C%0A%0AClub%20o%20negocio%3A%20%0AQu%C3%A9%20informes%20arm%C3%A1s%20hoy%3A%20%0AC%C3%B3mo%20te%20contacto%3A%20%0A">Escribime para el piloto</a>
+    <p class="mail">O directamente a <a href="mailto:passelbornda@gmail.com">passelbornda@gmail.com</a></p>
+  </div>
+</section>
+</main>
+
+<footer class="wrap">
+  <p>Las capturas son de un club inventado: ningún nombre, código ni importe es real.</p>
+  <p>Vera, hecho en Argentina.</p>
+</footer>
+</body>
+</html>
